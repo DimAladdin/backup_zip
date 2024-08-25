@@ -1,6 +1,7 @@
 package main
 
 import (
+	"archive/tar"
 	"archive/zip"
 	"fmt"
 	"io"
@@ -18,20 +19,22 @@ func name_file(path string) []string {
 }
 
 func checking_name(path string) string {
+	var s string
 	words := strings.Split(path, "/")
 	for _, v := range words[len(words)-1] {
 		if v == '.' {
 			word := strings.Split(path, ".")
-			return word[0]
+			s = word[0]
 		} else {
-			return words[len(words)-1]
+			s = words[len(words)-1]
 		}
 	}
+	return s
 }
 
 func path_archiv(path string) {
 
-	file, err := os.Create(name_file(path)[0] + ".zip")
+	file, err := os.Create(checking_name(path) + ".zip")
 	if err != nil {
 		panic(err)
 	}
@@ -55,7 +58,7 @@ func path_archiv(path string) {
 		defer file.Close()
 
 		// f, err := w.Create(name_file(path)[0] + "." + name_file(path)[1])
-		f, err := w.Create(path)
+		f, err := w.Create(checking_name(path))
 		if err != nil {
 			return err
 		}
@@ -74,5 +77,6 @@ func path_archiv(path string) {
 }
 
 func main() {
-	path_archiv("/Users/dmitriiiks/Downloads/Pixelmator_Pro_3_6_6_MAS_TNT.dmg")
+	path_archiv("/Users/dmitriiiks/project/go.mod")
+	header, _ := tar.FileInfoHeader(fileInfo, "")
 }
